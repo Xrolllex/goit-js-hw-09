@@ -10,9 +10,10 @@ const hoursBox = document.querySelector("[data-hours]")
 const minutesBox = document.querySelector("[data-minutes]")
 const secondsBox = document.querySelector("[data-seconds]")
 
-let yourData
-let yourTime
+let yourData = new Date().getTime();
+let yourTime = 0
 
+startBtn.setAttribute("disabled", "")
 
 const options = {
     enableTime: true,
@@ -24,7 +25,7 @@ const options = {
     },
   };
 
-
+  
 const checkDate = (selectedDate) => {
     const now = new Date().getTime()
     yourData = selectedDate.getTime()
@@ -34,10 +35,9 @@ const checkDate = (selectedDate) => {
         startBtn.setAttribute("disabled","")
     } else {
         startBtn.removeAttribute("disabled","")
-    } if (yourTime > 0) {
-        startBtn.setAttribute("disabled", "")
+    } 
 
-    }
+    clearInterval(yourTime)
 
     return
 }
@@ -64,23 +64,26 @@ const convertMs = (ms) => {
 
 
 const dataChange = (value) => {
-    time = setInterval(() => {
+    clearInterval(yourTime);
+     
+    yourTime = setInterval(() => {
+      daysBox.textContent = convertMs(value).days.toString().padStart(2,"0");
+      hoursBox.textContent = convertMs(value).hours.toString().padStart(2,"0");
+      minutesBox.textContent = convertMs(value).minutes.toString().padStart(2,"0");
+      secondsBox.textContent = convertMs(value).seconds.toString().padStart(2,"0");
 
-        daysBox.textContent = convertMs(value).days.toString().padStart(2,"0");
-        hoursBox.textContent = convertMs(value).hours.toString().padStart(2,"0");
-        minutesBox.textContent = convertMs(value).minutes.toString().padStart(2,"0");
-        secondsBox.textContent = convertMs(value).seconds.toString().padStart(2,"0");
-
-        if(value - new Date().getTime() < 900) {
-            console.log ("Timer stop")
-            clearInterval(time)
-            time = 0
-            startBtn.removeAttribute("disabled", "")
-        }
-
-    }, 1000)
-    startBtn.setAttribute("disabled", "")
+      if (value - new Date().getTime() < 900) {
+          console.log ("Timer stop");
+          clearInterval(yourTime);
+          yourTime = 0;
+          startBtn.removeAttribute("disabled");
+      }
+      
+  }, 1000);
+  startBtn.setAttribute("disabled", "");
 }
+
+
 
 flatpickr(input, options)
 startBtn.addEventListener("click", () => dataChange(yourData))
